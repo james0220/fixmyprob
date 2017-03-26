@@ -1,14 +1,25 @@
 {
-  "name": "app",
+  "name": "workspace",
   "version": "1.0.0",
-  "description": "",
+  "description": "Creating a small HTTP server for CPSC213",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./index.js"
   },
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yale-cpsc-213/http-servers-james0220.git"
+  },
+  "author": "James",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yale-cpsc-213/http-servers-james0220/issues"
+  },
+  "homepage": "https://github.com/yale-cpsc-213/http-servers-james0220#readme",
   "dependencies": {
-    "hapi": "^16.1.0"
+    "hapi": "^16.1.0",
+    "hapi-postgres-connection": "^6.1.0",
+    "nodemon": "^1.11.0"
   }
 }
