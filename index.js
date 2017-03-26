@@ -2,7 +2,6 @@
 
 const Hapi = require('hapi');
 var mysql = require('mysql');
-const Hoek = require('hoek');
 
 
 // WORK IN PROGRESS
@@ -24,13 +23,13 @@ server.connection({
 
 // Render templates with vision and handlebars
 server.register(require('vision'), (err) => {
-
-    Hoek.assert(!err, err);
-
+  if (err) {
+      throw err;
+  }
     server.views({
         engines: {
             html: require('handlebars'),
-            compileMode: 'async' // global setting
+            // compileMode: 'async' // global setting
         },
         relativeTo: __dirname,
         path: './views'
