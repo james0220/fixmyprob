@@ -64,6 +64,22 @@ server.route({
     }
 });
 
+server.route({
+    method: 'GET',
+    path: '/login',
+    handler: function (request, reply) {
+        reply.view('login', { title: 'Login' });
+    }
+});
+
+server.route({
+    method: 'GET',
+    path: '/signup',
+    handler: function (request, reply) {
+        reply.view('signup', { title: 'Sign Up' });
+    }
+});
+
 // Start the server
 server.start((err) => {
     if (err) {
