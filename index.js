@@ -2,6 +2,7 @@
 
 const Hapi = require('hapi');
 var mysql = require('mysql');
+const Inert = require('inert');
 
 
 // WORK IN PROGRESS
@@ -23,6 +24,7 @@ server.connection({
 
 // Render templates with vision and handlebars
 server.register(require('vision'), (err) => {
+  register: require('inert')
   if (err) {
       throw err;
   }
@@ -79,6 +81,15 @@ server.route({
         reply.view('signup', { title: 'Sign Up' });
     }
 });
+
+// Attempting to get images to render
+// server.route({
+//     method: 'GET',
+//     path: '/icon',
+//     handler: function (request, reply) {
+//       reply.view('icon.png');
+//     }
+// });
 
 // Start the server
 server.start((err) => {
