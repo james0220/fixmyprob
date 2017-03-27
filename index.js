@@ -24,19 +24,26 @@ server.connection({
 
 // Render templates with vision and handlebars
 server.register(require('vision'), (err) => {
-  register: require('inert')
   if (err) {
       throw err;
   }
-    server.views({
-        engines: {
-            html: require('handlebars'),
-            // compileMode: 'async' // global setting
-        },
-        relativeTo: __dirname,
-        path: './views'
-    });
 });
+
+server.register(require('inert'), (err) => {
+  if (err) {
+      throw err;
+  }
+});
+
+server.views({
+    engines: {
+        html: require('handlebars'),
+        // compileMode: 'async' // global setting
+    },
+    relativeTo: __dirname,
+    path: './views'
+});
+
 
 
 //STILL WORK IN PROGRESS; used code from exam for starter
@@ -83,13 +90,38 @@ server.route({
 });
 
 // Attempting to get images to render
-// server.route({
-//     method: 'GET',
-//     path: '/icon',
-//     handler: function (request, reply) {
-//       reply.view('icon.png');
-//     }
-// });
+
+server.route({
+    method: 'GET',
+    path: '/styles.css',
+    handler: function (request, reply) {
+      reply.file('./views/css/styles.css');
+    }
+});
+
+server.route({
+    method: 'GET',
+    path: '/icon.png',
+    handler: function (request, reply) {
+      reply.file('./views/img/icon.png');
+    }
+});
+
+server.route({
+    method: 'GET',
+    path: '/avatar.png',
+    handler: function (request, reply) {
+      reply.file('./views/img/avatar.png');
+    }
+});
+
+server.route({
+    method: 'GET',
+    path: '/header.png',
+    handler: function (request, reply) {
+      reply.file('./views/img/header.png');
+    }
+});
 
 // Start the server
 server.start((err) => {
