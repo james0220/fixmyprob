@@ -11,7 +11,7 @@ const pg = require('pg');
 let databaseClient = null;
 
 // First, we establish our database connection.
-// 
+//
 pg.connect(process.env.DATABASE_URL, function(err, client, done) {
     if(err){
         console.log("Error!", err);
@@ -90,6 +90,17 @@ function startServer(){
         path: '/login',
         handler: function (request, reply) {
             reply.view('login', { title: 'Login' });
+        }
+    });
+
+    server.route({
+        method: 'POST',
+        path: '/login',
+        handler: function (request, reply) {
+          // Here, we will check the supplied credentials against the database.
+          // If they are wrong, we show them the login form again. If they are
+          // right, we do something else
+            reply.view('login', { title: 'Login'});
         }
     });
 
