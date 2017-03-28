@@ -1,132 +1,145 @@
 'use strict';
 
 const Hapi = require('hapi');
-var mysql = require('mysql');
+// var mysql = require('mysql');
 const Inert = require('inert');
 
 
-// WORK IN PROGRESS
-// var connection = mysql.createConnection({
-//   host     : 'localhost',
-//   user     : 'root',
-//   password : '',
-//   database : 'users'
-// });
 
+const pg = require('pg');
+
+let databaseClient = null;
+
+// First, we establish our database connection.
+// 
+pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+    if(err){
+        console.log("Error!", err);
+        return;
+    }
+
+    // Connection to database ok! Now, let's start our
+    // server.
+    databaseClient = client;
+    startServer();
+});
 
 // Create a server with a host and port
-const server = new Hapi.Server();
+function startServer(){
 
-server.connection({
-    host: process.env.HOST || '0.0.0.0',
-    port: process.env.PORT || 8000
-});
+    const server = new Hapi.Server();
 
-// Render templates with vision and handlebars
-server.register(require('vision'), (err) => {
-  if (err) {
-      throw err;
-  }
-});
+    server.connection({
+        host: process.env.HOST || '0.0.0.0',
+        port: process.env.PORT || 8000
+    });
 
-server.register(require('inert'), (err) => {
-  if (err) {
-      throw err;
-  }
-});
+    // Render templates with vision and handlebars
+    server.register(require('vision'), (err) => {
+      if (err) {
+          throw err;
+      }
+    });
 
-server.views({
-    engines: {
-        html: require('handlebars'),
-        // compileMode: 'async' // global setting
-    },
-    relativeTo: __dirname,
-    path: './views'
-});
+    server.register(require('inert'), (err) => {
+      if (err) {
+          throw err;
+      }
+    });
 
-
-
-//STILL WORK IN PROGRESS; used code from exam for starter
-// connection.connect(); //connect to mysql
-
-// Add the route
-
-// WORK IN PROGRESS FOR SERVER
-// server.route({
-//     method: 'GET',
-//     path:'/',
-//     handler: function (request, reply) {
-//         connection.query('SELECT * FROM People', function (error, results, fields) {
-//             if (error) throw error;
-//             reply('The name is: ' + results[0].Name);
-//             });
-//     }
-// });
+    server.views({
+        engines: {
+            html: require('handlebars'),
+            // compileMode: 'async' // global setting
+        },
+        relativeTo: __dirname,
+        path: './views'
+    });
 
 
-// Add the route
-server.route({
-    method: 'GET',
-    path: '/',
-    handler: function (request, reply) {
-        reply.view('index', { title: 'Home page' });
-    }
-});
 
-server.route({
-    method: 'GET',
-    path: '/login',
-    handler: function (request, reply) {
-        reply.view('login', { title: 'Login' });
-    }
-});
+    //STILL WORK IN PROGRESS; used code from exam for starter
+    // connection.connect(); //connect to mysql
 
-server.route({
-    method: 'GET',
-    path: '/signup',
-    handler: function (request, reply) {
-        reply.view('signup', { title: 'Sign Up' });
-    }
-});
+    // Add the route
 
-// Attempting to get images to render
+    // WORK IN PROGRESS FOR SERVER
+    // server.route({
+    //     method: 'GET',
+    //     path:'/',
+    //     handler: function (request, reply) {
+    //         connection.query('SELECT * FROM People', function (error, results, fields) {
+    //             if (error) throw error;
+    //             reply('The name is: ' + results[0].Name);
+    //             });
+    //     }
+    // });
 
-server.route({
-    method: 'GET',
-    path: '/styles.css',
-    handler: function (request, reply) {
-      reply.file('./views/css/styles.css');
-    }
-});
 
-server.route({
-    method: 'GET',
-    path: '/icon.png',
-    handler: function (request, reply) {
-      reply.file('./views/img/icon.png');
-    }
-});
+    // Add the route
+    server.route({
+        method: 'GET',
+        path: '/',
+        handler: function (request, reply) {
+            reply.view('index', { title: 'Home page' });
+        }
+    });
 
-server.route({
-    method: 'GET',
-    path: '/avatar.png',
-    handler: function (request, reply) {
-      reply.file('./views/img/avatar.png');
-    }
-});
+    server.route({
+        method: 'GET',
+        path: '/login',
+        handler: function (request, reply) {
+            reply.view('login', { title: 'Login' });
+        }
+    });
 
-server.route({
-    method: 'GET',
-    path: '/header.png',
-    handler: function (request, reply) {
-      reply.file('./views/img/header.png');
-    }
-});
+    server.route({
+        method: 'GET',
+        path: '/signup',
+        handler: function (request, reply) {
+            reply.view('signup', { title: 'Sign Up' });
+        }
+    });
 
-// Start the server
-server.start((err) => {
-    if (err) {
-        throw err;
-    }
-    console.log('Server running at:', server.info.uri);
-});
+    // Attempting to get images to render
+
+    server.route({
+        method: 'GET',
+        path: '/styles.css',
+        handler: function (request, reply) {
+          reply.file('./views/css/styles.css');
+        }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/icon.png',
+        handler: function (request, reply) {
+          reply.file('./views/img/icon.png');
+        }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/avatar.png',
+        handler: function (request, reply) {
+          reply.file('./views/img/avatar.png');
+        }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/header.png',
+        handler: function (request, reply) {
+          reply.file('./views/img/header.png');
+        }
+    });
+
+    // Start the server
+    server.start((err) => {
+        if (err) {
+            throw err;
+        }
+        console.log('Server running at:', server.info.uri);
+    });
+};
