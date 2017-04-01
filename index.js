@@ -3,25 +3,34 @@
 const Hapi = require('hapi');
 // var mysql = require('mysql');
 const Inert = require('inert');
-
-
-
+var Joi = require('joi');
+var Bcrypt = require('bcrypt');
 const pg = require('pg');
 
 let databaseClient = null;
 
 // First, we establish our database connection.
 //
+// Default to SSL connections
+// pg.defaults.ssl = true;
 pg.connect(process.env.DATABASE_URL, function(err, client, done) {
     if(err){
         console.log("Error!", err);
         return;
     }
+    // if (err) throw err;
+  console.log('Connected to postgres! Getting schemas...');
 
-    // Connection to database ok! Now, let's start our
-    // server.
+  // client
+  //   .query('SELECT table_schema,table_name FROM information_schema.tables;')
+  //   .on('row', function(row) {
+  //     console.log(JSON.stringify(row));
+  //   });
+
+    // Connection to database ok! Now, let's start our server.
     databaseClient = client;
     startServer();
+
 });
 
 // Create a server with a host and port
@@ -111,6 +120,42 @@ function startServer(){
             reply.view('signup', { title: 'Sign Up' });
         }
     });
+
+    server.route({
+        method: 'POST',
+        path: '/signup',
+        handler: function (request, reply) {
+          db.get(request.payload.email, function(err, res) { // GENERIC DB request. insert your own here!
+            if(err) {
+              reply('fail').code(400);
+            }
+          });
+            Bcrypt.compare(request.payload.password, user.password, function (err, isValid) {
+                if(!err && isValid) {
+                  reply('great success'); // or what ever you want to rply
+                } else {
+                  reply('fail').code(400);
+                }
+            }); // END Bcrypt.compare which checks the password is correct
+          // }); // END db.get which checks if the person is in our database
+
+          // var email = request.payload.email
+          // console.log(email);
+          // if (email = 'jk')
+          // {
+          //   console.log('Success!');
+            // return res.redirect('/');
+      }
+  //       config: {
+  //         validate: {
+  //           payload: {
+  //             email: Joi.string().email().required(),
+  //               // password: Joi.string().password.min(2).max(200).required()
+  //   }
+  // },
+            // reply.view('signup', { title: 'Sign Up'});
+  });
+
 
     // Attempting to get images to render
 
