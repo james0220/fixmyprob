@@ -7,28 +7,35 @@ var Joi = require('joi');
 var Bcrypt = require('bcrypt');
 const pg = require('pg');
 
+// const connectionString = process.env.DATABASE_URL || 'postgres://fbfijdagdxlzzw:70685c2563d4a7bdf11a057962e95fbdae783fabb1c62d73e482d98e08c92f96@ec2-23-21-220-188.compute-1.amazonaws.com:5432/du7btfollj81u';
+//
+// const client = new pg.Client(connectionString);
+// client.connect();
+// const query = client.query(
+//   'SELECT * FROM users'
+// )
+//
+// console.log(query);
+
 let databaseClient = null;
+// var connectionString = "postgres://fbfijdagdxlzzw:70685c2563d4a7bdf11a057962e95fbdae783fabb1c62d73e482d98e08c92f96@ec2-23-21-220-188.compute-1.amazonaws.com:5432/du7btfollj81u";
 
 // First, we establish our database connection.
 //
 // Default to SSL connections
 // pg.defaults.ssl = true;
+
 pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+  console.log('Connected to postgres! Getting schemas...');
+
+    // Connection to database ok! Now, let's start our server.
+    databaseClient = client;
+    var name = client.query('SELECT * FROM users');
+    console.log(name);
     if(err){
         console.log("Error!", err);
         return;
     }
-    // if (err) throw err;
-  console.log('Connected to postgres! Getting schemas...');
-
-  // client
-  //   .query('SELECT table_schema,table_name FROM information_schema.tables;')
-  //   .on('row', function(row) {
-  //     console.log(JSON.stringify(row));
-  //   });
-
-    // Connection to database ok! Now, let's start our server.
-    databaseClient = client;
     startServer();
 
 });
@@ -125,22 +132,29 @@ function startServer(){
         method: 'POST',
         path: '/signup',
         handler: function (request, reply) {
-          db.get(request.payload.email, function(err, res) { // GENERIC DB request. insert your own here!
-            if(err) {
-              reply('fail').code(400);
-            }
-          });
-            Bcrypt.compare(request.payload.password, user.password, function (err, isValid) {
-                if(!err && isValid) {
-                  reply('great success'); // or what ever you want to rply
-                } else {
-                  reply('fail').code(400);
-                }
-            }); // END Bcrypt.compare which checks the password is correct
+          // databaseClient.get(request.payload.email, function(err, res) {
+          // databaseClient.get(INSERT INTO users (name) VALUES (request.payload.email), function(err, res) {
+          //   console.log(request.payload.email);
+          //
+          //   if(err) {
+          //     reply('fail').code(400);
+          //   }
+          // });
+
+            // Bcrypt.compare(request.payload.password, user.password, function (err, isValid) {
+            //     if(!err && isValid) {
+            //       reply('great success'); // or what ever you want to rply
+            //     } else {
+            //       reply('fail').code(400);
+            //     }
+            // }); // END Bcrypt.compare which checks the password is correct
           // }); // END db.get which checks if the person is in our database
 
-          // var email = request.payload.email
-          // console.log(email);
+          var email = request.payload.email
+          console.log(email);
+          // DATABASE_URL.execute("INSERT INTO users (name) VALUES (:email)", email=email);
+          //
+          // return redirect("https://www.google.com/");
           // if (email = 'jk')
           // {
           //   console.log('Success!');
