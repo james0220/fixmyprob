@@ -28,14 +28,20 @@ let databaseClient = null;
 pg.connect(process.env.DATABASE_URL, function(err, client, done) {
   console.log('Connected to postgres! Getting schemas...');
 
-    // Connection to database ok! Now, let's start our server.
-    databaseClient = client;
-    var name = client.query('SELECT * FROM users');
-    console.log(name);
     if(err){
         console.log("Error!", err);
         return;
     }
+
+    // Connection to database ok! Now, let's start our server.
+    databaseClient = client;
+    client.query('SELECT name FROM users where id = 1', (err, result) => {
+      console.log('QUERY WAS RUN');
+      for (var i = 0; i < result.rows.length; i++) {
+        console.log(result.rows[i]);
+      }
+    });
+
     startServer();
 
 });
@@ -101,6 +107,22 @@ function startServer(){
         }
     });
 
+  server.route({
+    method: 'GET',
+    path: '/movies/{id?}',
+    handler: function (request, reply) {
+        var search = request.params.id
+        let select = `SELECT * FROM users WHERE id = ` + search;
+        request.pg.client.query(select, function(err, result) {
+            // return reply(result);
+            return reply.view('movies', {'movies': result.rows});
+        })
+        // return reply(select);
+        // request.pg.client.query(select, function(err, result) {
+         // }
+  }
+})
+
     server.route({
         method: 'GET',
         path: '/login',
@@ -108,6 +130,7 @@ function startServer(){
             reply.view('login', { title: 'Login' });
         }
     });
+
 
     server.route({
         method: 'POST',
