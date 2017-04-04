@@ -162,17 +162,22 @@ function startServer(){
           // 2) Check to see if psw is equal to psw-repeat.
           // If the input is not valid, redirect them to the form again and show
           // some errors. Otherwise, add the user to the database.
-
+          if (request.payload.psw !== request.payload['psw-repeat']) {
+            reply.redirect('/signup');
+            console.log('Passwords do not match!');
+          }
+          else {
           // If all of the input is OK, do the following...
-          const sql = 'INSERT INTO users(email, password, repassword) VALUES ($1, $2, $3) RETURNING id'
-          const values = [request.payload.email, request.payload.psw, request.payload['psw-repeat']];
-          databaseClient.query(sql, values, function(err, result) {
-            // for (var i = 0; i < result.rows.length; i++) {
-            //   console.log(result.rows[i]);
-            // }
-          });
-          reply.redirect('/');
-
+            const sql = 'INSERT INTO users(email, password, repassword) VALUES ($1, $2, $3) RETURNING id'
+            const values = [request.payload.email, request.payload.psw, request.payload['psw-repeat']];
+            databaseClient.query(sql, values, function(err, result) {
+              // for (var i = 0; i < result.rows.length; i++) {
+              //   console.log(result.rows[i]);
+              // }
+            });
+            reply.redirect('/');
+          }
+          // }
 
             // Bcrypt.compare(request.payload.password, user.password, function (err, isValid) {
             //     if(!err && isValid) {
