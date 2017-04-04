@@ -35,7 +35,7 @@ pg.connect(process.env.DATABASE_URL, function(err, client, done) {
 
     // Connection to database ok! Now, let's start our server.
     databaseClient = client;
-    client.query('SELECT name FROM users where id = 1', (err, result) => {
+    client.query('SELECT email FROM users where id = 2', (err, result) => {
       console.log('QUERY WAS RUN');
       for (var i = 0; i < result.rows.length; i++) {
         console.log(result.rows[i]);
@@ -155,14 +155,24 @@ function startServer(){
         method: 'POST',
         path: '/signup',
         handler: function (request, reply) {
-          // databaseClient.get(request.payload.email, function(err, res) {
-          // databaseClient.get(INSERT INTO users (name) VALUES (request.payload.email), function(err, res) {
-          //   console.log(request.payload.email);
-          //
-          //   if(err) {
-          //     reply('fail').code(400);
-          //   }
-          // });
+          // First, let's verify the user inputs.
+          // 1) Check if the email address is a "valid" email and then turn it
+          //    into lowercase before we store it in the database.
+          //    Eg. did somebody submit wootbar#foo.com as their email?
+          // 2) Check to see if psw is equal to psw-repeat.
+          // If the input is not valid, redirect them to the form again and show
+          // some errors. Otherwise, add the user to the database.
+
+          // If all of the input is OK, do the following...
+          const sql = 'INSERT INTO users(email, password, repassword) VALUES ($1, $2, $3) RETURNING id'
+          const values = [request.payload.email, request.payload.psw, request.payload['psw-repeat']];
+          databaseClient.query(sql, values, function(err, result) {
+            // for (var i = 0; i < result.rows.length; i++) {
+            //   console.log(result.rows[i]);
+            // }
+          });
+          reply.redirect('/');
+
 
             // Bcrypt.compare(request.payload.password, user.password, function (err, isValid) {
             //     if(!err && isValid) {
@@ -173,15 +183,6 @@ function startServer(){
             // }); // END Bcrypt.compare which checks the password is correct
           // }); // END db.get which checks if the person is in our database
 
-          var email = request.payload.email
-          console.log(email);
-          // DATABASE_URL.execute("INSERT INTO users (name) VALUES (:email)", email=email);
-          //
-          // return redirect("https://www.google.com/");
-          // if (email = 'jk')
-          // {
-          //   console.log('Success!');
-            // return res.redirect('/');
       }
   //       config: {
   //         validate: {
@@ -195,7 +196,6 @@ function startServer(){
 
 
     // Attempting to get images to render
-
     server.route({
         method: 'GET',
         path: '/styles.css',
