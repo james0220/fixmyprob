@@ -131,18 +131,6 @@ function startServer(){
         }
     });
 
-
-    server.route({
-        method: 'POST',
-        path: '/login',
-        handler: function (request, reply) {
-          // Here, we will check the supplied credentials against the database.
-          // If they are wrong, we show them the login form again. If they are
-          // right, we do something else
-            reply.view('login', { title: 'Login'});
-        }
-    });
-
     server.route({
         method: 'GET',
         path: '/signup',
@@ -199,6 +187,16 @@ function startServer(){
             // reply.view('signup', { title: 'Sign Up'});
   });
 
+  server.route({
+      method: 'POST',
+      path: '/login',
+      handler: function (request, reply) {
+        // Here, we will check the supplied credentials against the database.
+        // If they are wrong, we show them the login form again. If they are
+        // right, we do something else
+          reply.view('login', { title: 'Login'});
+      }
+  });
 
     // Attempting to get images to render
     server.route({
